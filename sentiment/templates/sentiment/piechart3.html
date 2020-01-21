@@ -1,0 +1,65 @@
+{% load static %}
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var graph = document.getElementById('p');
+        var data = google.visualization.arrayToDataTable([
+          ['Review'],
+          ['Positive', {{form1}}],
+          ['Negative', {{form2}}],
+          ['Neutral',  {{form3}}],
+        ]);
+
+        var options = {
+          title: 'Individual Ratings'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+
+    {% include 'sentiment/navbar.html' %}
+    <div role="main" class="container">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-7">            
+                    <article class="media content-section">
+                        <div class="media-body">
+                          <div class="article-metadata">
+                            <a class="mr-2" href="#">{{ context.form.filename }}</a>
+                            <small class="text-muted">{{ context.form.process_date|date:"F d, Y P" }}</small>
+                          </div>
+                          <div class="table-responsive-sm">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                      <th scope="col">Individual Rating</th>
+                                      <th scope="col">Positive</th>
+                                      <th scope="col">Negative</th>
+                                      <th scope="col">Neutral</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <th scope="row">{{ context.form.rat|truncatechars_html:17 }}%</th>
+                                      <td>{{ context.form.positive|floatformat:3 }}%</td>
+                                      <td>{{ context.form.negative|floatformat:3 }}%</td>
+                                      <td>{{ context.form.neutral|floatformat:3 }}%</td>
+                                    </tr>
+                                  </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </article>
+                      <article class="media content-section">
+                        <div id="piechart" style="width: 800px; height: 350px;"></div>
+                    </article>
+                 </div>
+            </div>
+        </main>

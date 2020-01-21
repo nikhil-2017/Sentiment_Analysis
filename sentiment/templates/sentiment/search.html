@@ -1,0 +1,25 @@
+{% extends "sentiment/base.html" %}
+{% load nvd3_tags %}
+{% load_chart charttype chartdata "piechart_container" %}
+{% block content %}
+  {% if user.is_authenticated %}
+      <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+          <div class="content-section">          
+            <center>
+              <a class="account-img" href="{% url 'piechart' %}">
+                <i class="fa fa-folder"> Your File is Analyze! <br> click the link : DetailedView <br> redirect to "piechart" </i>  
+              </a>
+            </center>
+          <p class='text-muted'>
+          <ul class="list-group"></ul>
+              <center><li class="list-group-item list-group-item-light"><a class="article-title" href="{% url 'filehome' %}"><i class="fa fa-folder"></i>FileHome</a></li></center>
+          </ul>
+          </p>
+          </div>
+        </div>
+      </div>
+      {% include_container "piechart_container" 400 500 %}      
+  {% endif %}
+{% endblock content %}

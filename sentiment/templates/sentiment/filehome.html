@@ -1,0 +1,88 @@
+{% extends "sentiment/base.html" %}
+
+{% block content %}
+  {% if user.is_authenticated %}
+  <div class="row">
+    <ul class="list-group col-8">
+            <center><li class="list-group-item list-group-item-light"><a class="article-title" href="#">Overall Rating</a></li></center>
+    </ul>
+      <ul class="list-group">
+          <center>
+            <li class="list-group-item list-group-item-light">
+            <form class="" action="{% url 'piechart1' %}" method="get">
+              <input name="q" type="text" placeholder="Piechart : id">
+              <button class="btn btn-outline-info" type="submit">Search</button>
+            </form>  
+          </center>
+      </ul>
+    </div>
+</div>
+ <div class="row">
+      <div class="col-md-12">
+        <div class="col">
+
+        </div>
+        <div class="table-responsive-sm">
+          <table class="table">
+              <thead>
+                  <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Filename</th>
+                    <th scope="col">Analyze_Date</th>
+                    <th scope="col">Rating</th>
+                    <th scope="col">Positive</th>
+                    <th scope="col">Negative</th>
+                    <th scope="col">Neutral</th>
+                    <th scope="col">Overall Rating</th>
+                    <th scope="col">View</th>
+                    <th scope="col">User/Delete</th>
+                  </tr>
+                </thead>
+                {% for ov in ov %}
+                  <tbody>
+                    <tr>
+                      <th scope="row">{{ ov.id }}</th>
+                      <td>{{ ov.filename }}</td>
+                      <td>{{ ov.process_date|date:"d/m/Y" }}</td>
+                      <td>{{ ov.rating|floatformat:3 }}%</td>
+                      <td>{{ ov.positive|floatformat:3 }}%</td>
+                      <td>{{ ov.negative|floatformat:3 }}%</td>
+                      <td>{{ ov.neutral|floatformat:3 }}%</td>
+                      <th scope="row">{{ ov.rat|truncatechars_html:17 }}%</th>
+                      <td><a class="btn btn-primary btn-sm mt-1 mb-1" href="{% url 'overallfile-detail' ov.id %}">View</a></td>
+                      {% if ov.user == user %}
+                        <td><a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'overallfile-delete' ov.id %}">Delete</a></td>
+                      {% else %}
+                        <td><a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'user-fileupload' ov.user %}">{{ov.user}}</a></td>
+                      {% endif %}
+                    </tr>
+                  </tbody>
+                {% endfor %}
+          </table>
+        </div>
+        {% if is_paginated %}
+          {% if page_obj.has_previous %}
+            <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previos</a>
+          {% endif %}
+  
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+              <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3'%}
+            <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+          {% endfor %}
+  
+          {% if page_obj.has_next %}
+            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+          {% endif %}
+  
+        {% endif %}
+      </div>
+      
+    </div>
+
+  {% endif %}
+{% endblock content %}

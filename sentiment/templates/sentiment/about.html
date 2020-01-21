@@ -1,0 +1,62 @@
+{% extends "sentiment/base.html" %}
+{% load static %}
+{% block content %}
+{% if user.is_authenticated %}
+
+<main role="main" class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="content-section">   
+                <a class="article-title" href="#">
+                    <h3>
+                        About Page :</h3>
+                        <img class="account-img" src="{% static 'sentiment/isro.png' %}" style="width: 300px; height: 200px; position: relative; left:390px;" alt="isro-logo">
+                </a>
+                <p class='text-muted'>
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-light"><h3><a class="article-title" href="{% url 'home' %}">Sentiment Analysis From Text Feedback</a></h3></li>
+                    <li class="list-group-item list-group-item-light"><p>
+                        <blockquote>
+                            <h3>“If you want to understand people, especially your customers…then you have to be able to possess a strong capability to analyze text. “ — Paul Hoffman,</h3>
+                        </blockquote>
+                        
+                    </p></li>
+
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-light"><a class="article-title" href="{% url 'home' %}">Developers : </a></li>
+                        <li class="list-group-item list-group-item-light">Team Leader : Yash Guranani</li>
+                        <li class="list-group-item list-group-item-light">Team Member : Deepak Mulwani</li>
+                        <li class="list-group-item list-group-item-light">Team Member : Kartik Chindarkar</li>
+                        <li class="list-group-item list-group-item-light">Team Member : Himanshu Pingulkar</li>
+                        <li class="list-group-item list-group-item-light">Team Member : Nikhil Gaikwad</li>
+                        <li class="list-group-item list-group-item-light">Team Member : Prajakta Gole</li>
+                    </ul>
+
+                </ul>
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+    {% if is_paginated %}
+        {% if page_obj.has_previous %}
+            <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previos</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3'%}
+                <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+
+    {% endif %}
+{% endif %}
+{% endblock content %}

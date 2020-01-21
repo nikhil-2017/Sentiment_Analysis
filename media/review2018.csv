@@ -1,0 +1,7 @@
+product_id,product_name,category,review_date,rating,review_text
+1,abc,a,2015-01-01,5,this product is great awesome
+2,pqr,b,2015-02-02,4,this product is good but product is bad also
+3,xyz,c,2015-03-03,1,this product is worst
+4,qwe,d,2015-04-04,4,el producto es bueno
+5,jkl,e,2015-05-05,2,उत्पाद खराब है
+6,mnl,f,2015-06-06,0,the product is worst and fake

@@ -1,0 +1,12 @@
+{% extends "sentiment/base.html" %}
+{% block content %}
+    <article class="media content-section">
+        <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}" alt="user-img">
+        <div class="media-body">
+            <div class="article-metadata">
+                <a class="mr-2" href="{% url 'user-detail' object.author.username %}">{{ object.author }}</a>
+                <small class="text-muted">{{ object.author.email }}</small>
+            </div>
+        </div>
+    </article>
+{% endblock content %}

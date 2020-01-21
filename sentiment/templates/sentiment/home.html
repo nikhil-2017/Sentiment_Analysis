@@ -1,0 +1,116 @@
+{% extends "sentiment/base.html" %}
+{% block content %}
+{% if user.is_authenticated %}
+    <main role="main" class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="content-section">          
+                    <a class="article-title" href="{% url 'fileupload' %}">
+                        <center><img class="article-png" src="media/cloud.png" alt="upload-file" width="125" height="125"></center>
+                    </a>
+                    <p class='text-muted'>
+                    <ul class="list-group">
+                        <center><li class="list-group-item list-group-item-light"><a class="article-title" href="{% url 'fileupload' %}">Upload File</a></li></center>
+                    </ul>
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="content-section">          
+                    <center><a class="article-title" href="{% url 'mail' %}">
+                        <img class="account-png" src="media/filter.png" alt="process-img" width="125" height="125">
+                    </a></center>
+                <p class='text-muted'>
+                <ul class="list-group">
+                    <legend class="border-bottom mb-1"></legend>
+                    <div class="active-cyan-4 active-cyan-4 mb-2">
+                        <form action="{% url 'search' %}" method="get">
+                            <input class="form-control" name="q" value="" type="text" placeholder="Analyze File = FileName" aria-label="Processing">
+                        </form>
+                    </div>
+                </ul>
+                </p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="content-section">          
+                    <center><a class="article-title" href="{% url 'filehome' %}">
+                        <img class="account-png" src="media/bar.png" alt="history-img" width="125" height="125">
+                    </a></center>
+                <p class='text-muted'>
+                <ul class="list-group"></ul>
+                    <center><li class="list-group-item list-group-item-light"><a class="article-title" href="{% url 'filehome' %}">Overall Rating</a></li></center>
+                </ul>
+                </p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="content-section">          
+                    <center><a class="article-title" href="{% url 'indhome' %}">
+                        <img class="account-png" src="media/find.png" alt="individual rating-img" width="125" height="125">
+                    </a></center>
+                <p class='text-muted'>
+                <ul class="list-group"></ul>
+                    <center><li class="list-group-item list-group-item-light"><a class="article-title" href="{% url 'individualhome' %}">Individual Rating</a></li></center>
+                </ul>
+                </p>
+                </div>
+            </div>
+        </div>
+            <div class="row">
+                <div class="col-md-12">
+                        <div class="table-responsive-sm">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                      <th scope="col">id</th>
+                                      <th scope="col">filename</th>
+                                      <th scope="col">Uploaded-Date</th>
+                                      <th scope="col">Location</th>
+                                      <th scope="col">User</th>
+                                      <th scope="col">View/Delete</th>
+                                    </tr>
+                                  </thead>
+                                  {% for file in file %}
+                                    <tbody>
+                                      <tr>
+                                        <th scope="row">{{ file.id }}</th>
+                                        <td>{{ file.filename }}</td>
+                                        <td>{{ file.upload_date|date:"d/m/Y" }}</td>
+                                        <td>media/{{ file.filetype }}</td>
+                                        <td>{{ file.user }}</td>
+                                        {% if file.user == user %}
+                                            <td><a class="btn btn-danger btn-sm mb-1" href="{% url 'file-delete' file.id %}"><i class="fa fa-trash"> Delete</i></a></td>
+                                        {% else %}
+                                        <td><a class="btn btn-info btn-sm mb-1" href="{% url 'user-fileupload' file.user %}"><i class="fa fa-info"> View</i></a></td>
+                                        {% endif %}
+                                      </tr>
+                                    </tbody>
+                                  {% endfor %}
+                                </table>
+                            </div>
+                    {% if is_paginated %}
+                            {% if page_obj.has_previous %}
+                                <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+                                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previos</a>
+                            {% endif %}
+    
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3'%}
+                                    <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                                {% endif %}
+                            {% endfor %}
+    
+                            {% if page_obj.has_next %}
+                                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+                                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                            {% endif %}
+                        {% endif %}
+                </div>
+                
+            </div>
+    </main>        
+  {% endif %}
+{% endblock content %}

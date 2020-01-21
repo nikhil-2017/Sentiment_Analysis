@@ -1,0 +1,45 @@
+{% extends "sentiment/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="row">
+<div class="col-md-8">
+    <div class="content-section">
+        <div class="media">
+            <img class="rounded-circle account-img" src="{{ user.profile.image.url }}" alt="img">
+            <div class="media-body">
+                <h2 class="account-heading">{{user.username}}</h2>
+                <p class="text-secondary">{{user.email}}</p>
+                <!--a class="btn btn-secondary" href="#">reset password</!--a-->
+            </div>
+        </div>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Profile Info</legend>
+                    {{ u_form|crispy }}
+                    {{ p_form|crispy }}
+                </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Update</button>
+            </div>
+            </form>
+    </div>
+</div>
+
+{% if user.is_authenticated %}
+    <div class="col-md-4">
+          <ul class="list-group">
+            <center>
+              <li class="list-group-item list-group-item-light">
+                  <a class="article-title" href="{% url 'profile' %}">
+                      <img class="rounded-circle article-svg" src="{{ user.profile.image.url }}" alt="user-profile-img">
+                       Profile : {{ user.username }}</a>
+              </li>
+              <li class="list-group-item list-group-item-light"><a class="article-title" href="{% url 'fileupload' %}">Upload File</a></li>
+            <li class="list-group-item list-group-item-light"><a class="article-title" href="{% url 'user-fileupload' user.username %}">My Uploaded File </a></li>
+            <li class="list-group-item list-group-item-light"><a class="article-title" href="{% url 'register'%}">Regiter </a></li></center>
+          </ul>
+    </div>
+</div>
+{% endif %}
+{% endblock content %}

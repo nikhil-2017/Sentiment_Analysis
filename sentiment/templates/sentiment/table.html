@@ -1,0 +1,35 @@
+{% extends "sentiment/base.html" %}
+{% block content %}
+<div class="table-responsive-sm">
+    <table class="table">
+        <thead>
+            <tr>
+              <th scope="col">id</th>
+              <th scope="col">product_name</th>
+              <th scope="col">category</th>
+              <th scope="col">review_date</th>
+              <th scope="col">review_text</th>
+              <th scope="col">rating</th>
+              <th scope="col">positive</th>
+              <th scope="col">negative</th>
+              <th scope="col">neutral</th>
+            </tr>
+          </thead>
+          <!--{% for file in reviewfile %}-->
+          <tbody>
+            <tr>
+              <th scope="row">{{ file.product_id }}</th>
+              <td>{{ file.product_name }}</td>
+              <td>{{ file.category }}</td>
+              <td>{{ file.review_date }}</td>
+              <td>{{ file.review_text }}</td>
+              <td>{{ file.rating }}</td>
+              <td>{{ file.positive }}</td>
+              <td>{{ file.negative }}</td>
+              <td>{{ file.neutral }}</td>
+            </tr>
+          </tbody>
+          <!--{% endfor %}-->
+    </table>
+  </div>
+{% endblock content %}

@@ -1,0 +1,19 @@
+#views.py
+
+def piechart(pos,neg,neu):
+
+            #model = overall_rating
+            #over = overall_rating.objects.filter(filename='review.csv')
+            
+            xdata = ['Positive','Negative','Neutral']
+            ydata = [pos,neg,neu]
+
+            extra_serie = {"tooltip": {"y_start": "", "y_end": " cal"}}
+            chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
+            charttype = "pieChart"
+
+            data = {
+                'charttype': charttype,
+                'chartdata': chartdata,
+            }
+            return render_to_response('sentiment/search.html', data)
