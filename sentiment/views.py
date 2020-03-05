@@ -1,4 +1,5 @@
 import csv
+from django.core.paginator import Paginator
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from googletrans import Translator
 from django.shortcuts import render, get_object_or_404
@@ -14,9 +15,11 @@ import random
 import datetime
 import time
 import os
+from googletrans import Translator
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import login_required
 from django.views.generic import (
     TemplateView,
@@ -27,30 +30,103 @@ from django.views.generic import (
     DeleteView
 )
 
+def mailid(request,id):
+    file = get_object_or_404(overall_rating, pk=id)
+    form1 = file.positive
+    form2 = file.negative
+    form3 = file.neutral
+    form4 = file.filename
+    form5 = file.process_date
+    form6 = file.rat
+    form7 = file.rating
+    host = "smtp.gmail.com"
+    port = 587
+    username = "nickgaikwad11@gmail.com"
+    password = "11081999"
+    from_email = 'nickgaikwad11@gmail.com'
+    to_list = ['2017.nikhil.gaikwad@ves.ac.in']
+    try:
+        email_conn = smtplib.SMTP(host, port)
+        email_conn.ehlo()
+        email_conn.starttls()
+        email_conn.login(username, password)
+        the_msg = MIMEMultipart("alternative")
+        the_msg['Subject'] = str("Report {}".format(form4))
+        the_msg["From"] = from_email
+        the_msg["To"] = to_list[0]
+        plain_txt = "Testing the message"
+        html_txt ="""\
+        <html>
 
-def home(request):
-    context = {
-        'file': fileupload.objects.all()
-    }
-    return render(request,'sentiment/home.html',context)
+<head>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <style>
+        @page {
+            @bottom-right {
+                content: counter(page) " of " counter(pages);
+            }
+        }
+        .table-bordered > tbody > tr > td{
+            border:1px solid black;
+}
+    </style>
+</head>
+        <div class="container" style="page-break-before: always;">
+        <div class="row">
+            
+        </div><br>
+        
+       
+        
+        <table class="table table-bordered table-condensed">
+            <tbody>
+              
+                <tr>
+                    <td>
+                        <h4>
+                            <strong>File name:</strong>
+                        </h4>
+                        <span>"""+str(form4)+"""</span><br>
+                        <span><small class="text-muted">Date&Time : """+str(form5)+"""</small></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
 
-class fileListView(ListView):
-    model = fileupload
-    template_name = 'sentiment/home.html'
-    context_object_name = 'file'
-    ordering = ['-upload_date'] 
-    paginate_by = 4
+                        <h4>
+                            <strong>Overall Rating:</strong>
+                        </h4>
+                        <span>""" +str(form6)+"""</span><br>
 
-class UserFileListView(ListView):
-    model = fileupload
-    template_name = 'sentiment/user_fileupload.html'
-    context_object_name = 'file'
-    paginate_by = 2
+                        <h4>
+                            <strong>Rating:</strong>
+                        </h4>
+                        <span>Positive:""" +str(form1)+"""</span><br>
+                        <span>Negative: """+str(form2)+"""</span><br>
+                        <span>Neutral: """+str(form3)+"""</span><br>
+                        <span>Rating: """+str(form7)+"""</span>
 
-    def get_queryset(self):
-        user = get_object_or_404(User, username=self.kwargs.get('username'))
-        return fileupload.objects.filter(user=user).order_by('-upload_date')
+                    </td>
+                </tr>
+              </tbody>
+            </table><br>
+</body>
+</html>
 
+        """
+        part_1 = MIMEText(plain_txt, 'plain')
+        part_2 = MIMEText(html_txt, "html")
+        the_msg.attach(part_1)
+        the_msg.attach(part_2)
+        email_conn.sendmail(from_email, to_list, the_msg.as_string())
+        email_conn.quit()
+    except smtplib.SMTPException:
+        print("error sending message")
+
+
+    return render(request,'sentiment/analysis.html')
 
 
 def mail(request):
@@ -60,12 +136,14 @@ def mail(request):
     form3 = file.neutral
     form4 = file.filename
     form5 = file.process_date
+    form6 = file.rat
+    form7 = file.rating
     host = "smtp.gmail.com"
     port = 587
-    username = ""
-    password = ""
-    from_email = ''
-    to_list = ['']
+    username = "nickgaikwad11@gmail.com"
+    password = "11081999"
+    from_email = 'nickgaikwad11@gmail.com'
+    to_list = ['2017.nikhil.gaikwad@ves.ac.in']
     try:
         email_conn = smtplib.SMTP(host, port)
         email_conn.ehlo()
@@ -74,12 +152,36 @@ def mail(request):
         the_msg = MIMEMultipart("alternative")
         the_msg['Subject'] = "Report"
         the_msg["From"] = from_email
-        #the_msg["To"]  = to_list[0]
+        the_msg["To"] = to_list[0]
         plain_txt = "Testing the message"
         html_txt ="""\
         <html>
 
 <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var graph = document.getElementById('p');
+        var data = google.visualization.arrayToDataTable([
+          ['Review', 'Rating'],
+          ['Positive', """+str(form1)+"""],
+          ['Negative', """+str(form2)+"""],
+          ['Neutral',  """+str(form3)+"""],
+        ]);
+
+        var options = {
+          title: 'Overall Ratings'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
         crossorigin="anonymous">
     <style>
@@ -124,8 +226,43 @@ def mail(request):
                 </tr>
               </tbody>
             </table><br>
-                
+    <div role="main" class="container">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-7">            
+                    <article class="media content-section">
+                        <div class="media-body">
+                          <div class="article-metadata">
+                            <a class="mr-2" href="#">"""+str(form4)+"""</a>
+                            <small class="text-muted">"""+str(form5)+"""</small>
+                          </div>
+                          <div class="table-responsive-sm">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                      <th scope="col">Overall Rating</th>
+                                      <th scope="col">Positive</th>
+                                      <th scope="col">Negative</th>
+                                      <th scope="col">Neutral</th>
+                                      <th scope="col">Rating</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <th scope="row">"""+str(form6)+"""%</th>
+                                      <td>"""+str(form1)+"""%</td>
+                                      <td>"""+str(form2)+"""%</td>
+                                      <td>"""+str(form3)+"""%</td>
+                                      <td>"""+str(form7)+"""%</td>
+                                    </tr>
+                                  </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </article>
+            </div>
     </div>
+    <div id="piechart" style="width: 800px; height: 350px;"></div>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
@@ -134,7 +271,7 @@ def mail(request):
 
         """
         part_1 = MIMEText(plain_txt, 'plain')
-        part_2 = MIMEText(html_txt.encode(), "html")
+        part_2 = MIMEText(html_txt, "html")
         the_msg.attach(part_1)
         the_msg.attach(part_2)
         email_conn.sendmail(from_email, to_list, the_msg.as_string())
@@ -143,7 +280,27 @@ def mail(request):
         print("error sending message")
 
 
-    return render(request,'sentiment/filehome.html')
+    return render(request,'sentiment/analysis.html')
+
+
+class fileListView(ListView):
+    model = fileupload
+    template_name = 'sentiment/home.html'
+    context_object_name = 'file'
+    ordering = ['-upload_date'] 
+    paginate_by = 4
+
+class UserFileListView(ListView):
+    model = fileupload
+    template_name = 'sentiment/user_fileupload.html'
+    context_object_name = 'file'
+    paginate_by = 2
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        return fileupload.objects.filter(user=user).order_by('-upload_date')
+
+
 
 class fileDetailView(DetailView):
     model = fileupload
@@ -151,7 +308,7 @@ class fileDetailView(DetailView):
 
 class fileCreateView(LoginRequiredMixin ,CreateView):
     model = fileupload
-
+    
     fields = ['filename','filetype']
 
     def form_valid(self, form):
@@ -164,7 +321,7 @@ class fileCreateView(LoginRequiredMixin ,CreateView):
 
 class fileDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = fileupload
-    success_url = '/'
+    success_url = '/sentiment/'
     
     def test_func(self):
         fileupload = self.get_object()
@@ -317,7 +474,7 @@ class fileoverallDetailView(DetailView):
 
 class fileoverallDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = overall_rating
-    success_url = '/filehome/'
+    success_url = '/sentiment/filehome/'
 
     def test_func(self):
         overall_rating = self.get_object()
@@ -359,7 +516,7 @@ class individualDetailView(DetailView):
 
 class individualDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = individual_rating
-    success_url = '/individualhome/'
+    success_url = '/sentiment/individualhome/'
 
     def test_func(self):
         return True
@@ -415,3 +572,183 @@ def piechart2(request):
 
 class piechartDetailView(DetailView):
     model = overall_rating
+
+
+def piedetail(request,ov_id):
+    detailblog = get_object_or_404(overall_rating, pk=ov_id)
+    return render(request,'sentiment/piechartdetail.html',{'detailblog':detailblog})
+
+def pieinddetail(request,ind_id):
+    inddetail = get_object_or_404(individual, pk=ind_id)
+    return render(request,'sentiment/piechart_inddetail.html',{'inddetail':inddetail})
+
+def pieinddetail1(request,ind_id):
+    inddetail = get_object_or_404(individual_rating, pk=ind_id)
+    return render(request,'sentiment/piechart_inddetail1.html',{'inddetail':inddetail})
+
+def filedetail(request,filename):
+    filedetail = individual_rating.objects.filter(filename__filename=filename).order_by('-id')
+    filename = filename
+    return render(request,'sentiment/filedetail.html',{'filedetail':filedetail, 'filename': filename })
+
+from django.db.models import Avg, Max, Min, Sum
+def productdetail(request,product_name):
+    product_detail = individual_rating.objects.filter(product_name=product_name)
+    pos_avg = individual_rating.objects.filter(product_name=product_name).aggregate(Avg('positive'))
+    neg_avg = individual_rating.objects.filter(product_name=product_name).aggregate(Avg('negative'))
+    neu_avg = individual_rating.objects.filter(product_name=product_name).aggregate(Avg('neutral'))
+    rat_avg = individual_rating.objects.filter(product_name=product_name).aggregate(Avg('rating'))
+    
+    positive_avg = pos_avg["positive__avg"]
+    negative_avg = neg_avg["negative__avg"]
+    neutral_avg = neu_avg["neutral__avg"]
+    rating_avg = rat_avg["rating__avg"]
+
+    avg = {
+        'pos_avg': float(positive_avg),
+        'neg_avg': float(negative_avg),
+        'neu_avg': float(neutral_avg),
+        'rating_avg': float(rating_avg)
+    }
+    print('{} {} {} {}'.format(positive_avg, negative_avg, neutral_avg, rating_avg))
+    product_name = product_name
+    return render(request,'sentiment/productdetail.html',{'product_detail':product_detail, 'product_name': product_name, 'avg':avg })
+
+
+def avg_piedetail(request,product_name):
+    
+    product_detail = individual_rating.objects.filter(product_name=product_name)
+    pos_avg = individual_rating.objects.filter(product_name=product_name).aggregate(Avg('positive'))
+    neg_avg = individual_rating.objects.filter(product_name=product_name).aggregate(Avg('negative'))
+    neu_avg = individual_rating.objects.filter(product_name=product_name).aggregate(Avg('neutral'))
+    rat_avg = individual_rating.objects.filter(product_name=product_name).aggregate(Avg('rating'))
+    
+    positive_avg = pos_avg["positive__avg"]
+    negative_avg = neg_avg["negative__avg"]
+    neutral_avg = neu_avg["neutral__avg"]
+    rating_avg = rat_avg["rating__avg"]
+
+    avg = {
+        'pos_avg': float(positive_avg),
+        'neg_avg': float(negative_avg),
+        'neu_avg': float(neutral_avg),
+        'rating_avg': float(rating_avg)
+    }
+    print('{} {} {} {}'.format(positive_avg, negative_avg, neutral_avg, rating_avg))
+    product_name = product_name
+
+    return render(request,'sentiment/piechartdetail1.html',{'avg':avg, 'product_name':product_name})
+
+
+def product_mail(request,product_name):
+    product_detail = individual_rating.objects.filter(product_name=product_name)
+    pos_avg = individual_rating.objects.filter(product_name=product_name).aggregate(Avg('positive'))
+    neg_avg = individual_rating.objects.filter(product_name=product_name).aggregate(Avg('negative'))
+    neu_avg = individual_rating.objects.filter(product_name=product_name).aggregate(Avg('neutral'))
+    rat_avg = individual_rating.objects.filter(product_name=product_name).aggregate(Avg('rating'))
+    
+    positive_avg = float(pos_avg["positive__avg"])
+    negative_avg = float(neg_avg["negative__avg"])
+    neutral_avg = float(neu_avg["neutral__avg"])
+    rating_avg = float(rat_avg["rating__avg"])
+    
+    form1 = positive_avg
+    form2 = negative_avg
+    form3 = neutral_avg
+    form4 = product_name
+
+    if positive_avg > negative_avg and positive_avg > neutral_avg :
+        form6 = str("Positive : {}".format(positive_avg))
+    elif negative_avg > neutral_avg :
+        form6 = str("Negative : {}".format(negative_avg))
+    else :
+        form6 = str("Neutral : {}".format(neutral_avg))
+
+    form7 = rating_avg
+    host = "smtp.gmail.com"
+    port = 587
+    username = "nickgaikwad11@gmail.com"
+    password = "11081999"
+    from_email = 'nickgaikwad11@gmail.com'
+    to_list = ['2017.nikhil.gaikwad@ves.ac.in']
+    try:
+        email_conn = smtplib.SMTP(host, port)
+        email_conn.ehlo()
+        email_conn.starttls()
+        email_conn.login(username, password)
+        the_msg = MIMEMultipart("alternative")
+        the_msg['Subject'] = str("Report {}".format(form4))
+        the_msg["From"] = from_email
+        the_msg["To"] = to_list[0]
+        plain_txt = "Testing the message"
+        html_txt ="""\
+        <html>
+
+<head>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <style>
+        @page {
+            @bottom-right {
+                content: counter(page) " of " counter(pages);
+            }
+        }
+        .table-bordered > tbody > tr > td{
+            border:1px solid black;
+}
+    </style>
+</head>
+        <div class="container" style="page-break-before: always;">
+        <div class="row">
+            
+        </div><br>
+        
+       
+        
+        <table class="table table-bordered table-condensed">
+            <tbody>
+              
+                <tr>
+                    <td>
+                        <h4>
+                            <strong>Product name:</strong>
+                        </h4>
+                        <span>"""+str(form4)+"""</span><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+
+                        <h4>
+                            <strong>Overall Rating:</strong>
+                        </h4>
+                        <span>""" +str(form6)+"""</span><br>
+
+                        <h4>
+                            <strong>Rating:</strong>
+                        </h4>
+                        <span>Positive:""" +str(form1)+"""</span><br>
+                        <span>Negative: """+str(form2)+"""</span><br>
+                        <span>Neutral: """+str(form3)+"""</span><br>
+                        <span>Rating: """+str(form7)+"""</span>
+
+                    </td>
+                </tr>
+              </tbody>
+            </table><br>
+</body>
+</html>
+
+        """
+        part_1 = MIMEText(plain_txt, 'plain')
+        part_2 = MIMEText(html_txt, "html")
+        the_msg.attach(part_1)
+        the_msg.attach(part_2)
+        email_conn.sendmail(from_email, to_list, the_msg.as_string())
+        email_conn.quit()
+    except smtplib.SMTPException:
+        print("error sending message")
+
+
+    return render(request,'sentiment/analysis.html')

@@ -34,6 +34,7 @@
                           <div class="article-metadata">
                             <a class="mr-2" href="#">{{ context.form.filename }}</a>
                             <small class="text-muted">{{ context.form.process_date|date:"F d, Y P" }}</small>
+                            <a class="btn btn-primary mt-1 mb-1 float-sm-right" href="{% url 'mail' %}">Report Mail</a>
                           </div>
                           <div class="table-responsive-sm">
                             <table class="table">

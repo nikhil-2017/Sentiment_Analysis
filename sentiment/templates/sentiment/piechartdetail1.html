@@ -1,0 +1,74 @@
+{% load static %}
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var graph = document.getElementById('p');
+        var data = google.visualization.arrayToDataTable([
+          ['Review','Rating'],
+          ['Positive', {{avg.pos_avg}}],
+          ['Negative', {{avg.neg_avg}}],
+          ['Neutral',  {{avg.neu_avg}}],
+        ]);
+
+        var options = {
+          title: 'Average Ratings'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+
+    {% include 'sentiment/navbar.html' %}
+    <div role="main" class="container">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-7">            
+                    <article class="media content-section">
+                        <div class="media-body">
+                          <div class="article-metadata">
+                            <a class="mr-2" href="#">{{ product_name }}</a>
+                            <a class="btn btn-primary mt-1 mb-1 float-sm-right" href="{% url 'product-mail' product_name %}">Product Report</a>
+                          </div>
+                          <div class="table-responsive-sm">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                      <th scope="col">Overall Rating</th>
+                                      <th scope="col">Positive</th>
+                                      <th scope="col">Negative</th>
+                                      <th scope="col">Neutral</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <th scope="row">
+                                        {% if avg.pos_avg > avg.neg_avg and avg.pos_avg > avg.neu_avg %}
+                                          Positive : {{ avg.pos_avg|floatformat:2 }}%
+                                        {% elif avg.neg_avg > avg.neu_avg %}
+                                          Negative : {{ avg.neg_avg|floatformat:2 }}%
+                                        {% else %}
+                                          Neutral : {{ avg.neu_avg|floatformat:2 }}%
+                                        {% endif %}
+                                      </th>
+                                      <td>{{ avg.pos_avg|floatformat:3 }}%</td>
+                                      <td>{{ avg.neg_avg|floatformat:3 }}%</td>
+                                      <td>{{ avg.neu_avg|floatformat:3 }}%</td>
+                                    </tr>
+                                  </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </article>
+                    </article>
+                      <article class="media content-section">
+                        <div id="piechart" style="width: 800px; height: 350px;"></div>
+                    </article>
+                 </div>
+            </div>
+        </main>

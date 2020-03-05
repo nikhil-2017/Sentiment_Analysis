@@ -21,14 +21,14 @@
                         <tbody>
                           <tr>
                             <th scope="row">{{ ir.id }}</th>
-                            <td>{{ ir.product_name }}</td>
+                            <td><a href="{% url 'product-detail' ir.product_name %}">{{ ir.product_name }}</a></td>
                             <td>{{ ir.review_text }}</td>
                             <td>{{ ir.process_review }}</td>
                             <td>{{ ir.rating|floatformat:3 }}</td>
                             <td>{{ ir.positive|floatformat:3 }}%</td>
                             <td>{{ ir.negative|floatformat:3 }}%</td>
                             <td>{{ ir.neutral|floatformat:3 }}%</td>
-                            <td><a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'individual-delete' ir.id %}">Delete</a></td>
+                            <td><a class="btn btn-primary btn-sm mt-1 mb-1" href="{% url 'ind-detail1' ir.id %}">PieView</a></td>
                           </tr>
                         </tbody>
                       {% endfor %}

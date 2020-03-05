@@ -1,0 +1,102 @@
+{% extends "sentiment/base.html" %}
+{% block content %}
+  {% if user.is_authenticated %}
+    <div class="row">
+      <ul class="list-group col-12">
+        <center><li class="list-group-item list-group-item-light"><a class="article-title" href="#"> {{ product_name }} : Individual Rating</a></li></center>
+        <li class="list-group-item list-group-item-light"><div class="table-responsive-sm">
+          <table class="table">
+              <thead>
+                  <tr>
+                    <th scope="col">Overall Rating</th>
+                    <th scope="col">Rating</th>
+                    <th scope="col">Positive</th>
+                    <th scope="col">Negative</th>
+                    <th scope="col">Neutral</th>
+                    <th scope="col">PieView</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">
+                      {% if avg.pos_avg > avg.neg_avg and avg.pos_avg > avg.neu_avg %}
+                        Positive : {{ avg.pos_avg|floatformat:2 }}%
+                      {% elif avg.neg_avg > avg.neu_avg %}
+                        Negative : {{ avg.neg_avg|floatformat:2 }}%
+                      {% else %}
+                        Neutral : {{ avg.neu_avg|floatformat:2 }}%
+                      {% endif %}
+                    </th>
+                    <td>{{ avg.rating_avg|floatformat:2 }}%</td>
+                    <td>{{ avg.pos_avg|floatformat:2 }}%</td>
+                    <td>{{ avg.neg_avg|floatformat:2 }}%</td>
+                    <td>{{ avg.neu_avg|floatformat:2 }}%</td>
+                    <td><a class="btn btn-primary btn-sm " href="{% url 'product_pie' product_name %}">PieView</a></td>
+                  </tr>
+                </tbody>
+          </table>
+        </div></li>
+      </ul>
+      <div class="table-responsive-sm">
+        <table class="table">
+            <thead>
+                <tr>
+                  <th scope="col">id</th>
+                  <th scope="col">Review_text</th>
+                  <th scope="col">Trans_review</th>
+                  <th scope="col">Rating</th>
+                  <th scope="col">Positive</th>
+                  <th scope="col">Negative</th>
+                  <th scope="col">Neutral</th>
+                  <th scope="col">Ind_Rating</th>
+                  <th scope="col">PieView</th>
+                </tr>
+              </thead>
+              {% for ir in product_detail %}
+                <tbody>
+                  <tr>
+                    <th scope="row">{{ ir.id }}</th>
+                    <td>{{ ir.review_text }}</td>
+                    <td>{{ ir.process_review }}</td>
+                    <td>{{ ir.rating|floatformat:2 }}%</td>
+                    <td>{{ ir.positive|floatformat:2 }}%</td>
+                    <td>{{ ir.negative|floatformat:2 }}%</td>
+                    <td>{{ ir.neutral|floatformat:2 }}%</td>
+                    <th scope="row">
+                      {% if ir.positive > ir.negative and ir.positive > ir.neutral %}
+                        Positive : {{ ir.positive|floatformat:2 }}%
+                      {% elif ir.negative > ir.neutral%}
+                        Negative : {{ ir.negative|floatformat:2 }}%
+                      {% else %}
+                        Neutral : {{ ir.neutral|floatformat:2 }}% 
+                      {% endif %}
+                    </th>
+                    <td><a class="btn btn-primary btn-sm " href="{% url 'ind-detail1' ir.id %}">PieView</a></td>
+                  </tr>
+                </tbody>
+              {% endfor %}
+        </table>
+        {% if is_paginated %}
+          {% if page_obj.has_previous %}
+          <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+          <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previos</a>
+          {% endif %}
+    
+          {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+            <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3'%}
+          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+          {% endif %}
+          {% endfor %}
+    
+          {% if page_obj.has_next %}
+          <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+          <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+          {% endif %}
+    
+        {% endif %}
+      </div>        
+    </div>
+  {% endif %}
+{% endblock content %}

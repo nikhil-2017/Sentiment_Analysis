@@ -1,4 +1,5 @@
 {% extends "sentiment/base.html" %}
+{% load staticfiles %}
 {% block content %}
 {% if user.is_authenticated %}
     <main role="main" class="container">
@@ -6,7 +7,7 @@
             <div class="col-md-3">
                 <div class="content-section">          
                     <a class="article-title" href="{% url 'fileupload' %}">
-                        <center><img class="article-png" src="media/cloud.png" alt="upload-file" width="125" height="125"></center>
+                        <center><img class="article-png" src="{% static 'sentiment/cloud.png' %}" alt="upload-file" width="125" height="125"></center>
                     </a>
                     <p class='text-muted'>
                     <ul class="list-group">
@@ -18,7 +19,7 @@
             <div class="col-md-3">
                 <div class="content-section">          
                     <center><a class="article-title" href="{% url 'mail' %}">
-                        <img class="account-png" src="media/filter.png" alt="process-img" width="125" height="125">
+                        <img class="account-png" src="{% static 'sentiment/filter.png' %}" alt="process-img" width="125" height="125">
                     </a></center>
                 <p class='text-muted'>
                 <ul class="list-group">
@@ -35,7 +36,7 @@
             <div class="col-md-3">
                 <div class="content-section">          
                     <center><a class="article-title" href="{% url 'filehome' %}">
-                        <img class="account-png" src="media/bar.png" alt="history-img" width="125" height="125">
+                        <img class="account-png" src="{% static 'sentiment/bar.png' %}" alt="history-img" width="125" height="125">
                     </a></center>
                 <p class='text-muted'>
                 <ul class="list-group"></ul>
@@ -47,7 +48,7 @@
             <div class="col-md-3">
                 <div class="content-section">          
                     <center><a class="article-title" href="{% url 'indhome' %}">
-                        <img class="account-png" src="media/find.png" alt="individual rating-img" width="125" height="125">
+                        <img class="account-png" src="{% static 'sentiment/find.png' %}" alt="individual rating-img" width="125" height="125">
                     </a></center>
                 <p class='text-muted'>
                 <ul class="list-group"></ul>
@@ -78,7 +79,7 @@
                                         <td>{{ file.filename }}</td>
                                         <td>{{ file.upload_date|date:"d/m/Y" }}</td>
                                         <td>media/{{ file.filetype }}</td>
-                                        <td>{{ file.user }}</td>
+                                        <td><a class="article-content" href="{% url 'user-fileupload' file.user %}">{{ file.user }}</a></td>
                                         {% if file.user == user %}
                                             <td><a class="btn btn-danger btn-sm mb-1" href="{% url 'file-delete' file.id %}"><i class="fa fa-trash"> Delete</i></a></td>
                                         {% else %}

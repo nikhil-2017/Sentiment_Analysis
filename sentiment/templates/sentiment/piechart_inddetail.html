@@ -1,0 +1,81 @@
+{% load static %}
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var graph = document.getElementById('p');
+        var data = google.visualization.arrayToDataTable([
+          ['Review','Rating'],
+          ['Positive', {{inddetail.positive}},],
+          ['Negative', {{inddetail.negative}}],
+          ['Neutral',  {{inddetail.neutral}}],
+        ]);
+
+        var options = {
+          title: 'Individual Ratings'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+
+    {% include 'sentiment/navbar.html' %}
+    <div class="container">
+      <div class="row">
+        <div class="col-md-7">            
+          <article class="media content-section">
+            <div class="media-body">
+              <div class="article-metadata">
+                <a class="mr-2" href="#">{{ inddetail.filename }}</a>
+              </div>
+              <div class="table-responsive-sm">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Individual Rating</th>
+                      <th scope="col">Positive</th>
+                      <th scope="col">Negative</th>
+                      <th scope="col">Neutral</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">{{ inddetail.rat|truncatechars_html:17 }}%</th>
+                      <td>{{ inddetail.positive|floatformat:3 }}%</td>
+                      <td>{{ inddetail.negative|floatformat:3 }}%</td>
+                      <td>{{ inddetail.neutral|floatformat:3 }}%</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </article>
+          <article class="media content-section">
+            <div id="piechart" style="width: 800px; height: 350px;"></div>
+          </article>
+        </div>
+          <div class="col-md-5">
+            <article class="media content-section">
+              <div class="media-body">
+                <div class="article-metadata">
+                  <a class="mr-2" href="#">Review Text</a>
+                </div>
+                <p class="article-content">{{ inddetail.review_text }}</p>
+              </div>
+            </article>
+            <article class="media content-section">
+              <div class="media-body">
+                <div class="article-metadata">
+                  <a class="mr-2" href="#">Processed Review Text</a>
+                </div>
+                <p class="article-content">{{ inddetail.process_review }}</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>

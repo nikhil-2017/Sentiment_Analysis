@@ -5,7 +5,7 @@
 <div class="col-md-8">
     <div class="content-section">
         <div class="media">
-            <img class="rounded-circle account-img" src="{{ user.profile.image.url }}" alt="img">
+            <img class="image-fluid rounded-circle account-img" src="{{ user.profile.image.url }}" alt="img">
             <div class="media-body">
                 <h2 class="account-heading">{{user.username}}</h2>
                 <p class="text-secondary">{{user.email}}</p>
@@ -28,7 +28,12 @@
 
 {% if user.is_authenticated %}
     <div class="col-md-4">
-          <ul class="list-group">
+        <ul class="list-group">
+            <li class="list-group-item list-group-item-light">
+                <a class="article-title" href="{% url 'profile' %}">
+                    <img class="image-fluid" src="{{ user.profile.image.url }}" alt="user-profile-img">
+                </a>
+            </li>
             <center>
               <li class="list-group-item list-group-item-light">
                   <a class="article-title" href="{% url 'profile' %}">

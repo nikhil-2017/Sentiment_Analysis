@@ -35,6 +35,18 @@ urlpatterns = [
     path('piechart/',views.piechart,name='piechart'),
     path('piechart1/',views.piechart1,name='piechart1'),
     path('piechart2/',views.piechart2,name='piechart2'),
+    path('product_pie/<str:product_name>/',views.avg_piedetail,name='product_pie'),
 
-    path('indhome1/',indListView.as_view(),name='indhome')
+    path('ov_detail/<int:ov_id>/',views.piedetail,name='ov-detail'),
+    path('ind_detail/<int:ind_id>/',views.pieinddetail,name='ind-detail'),
+    path('ind_detail1/<int:ind_id>/',views.pieinddetail1,name='ind-detail1'),
+    path('indhome1/',indListView.as_view(),name='indhome'),
+
+    path('filename/<str:filename>/',views.filedetail,name='filedetail'),
+    path('productname/<str:product_name>/',views.productdetail,name='product-detail'),
+
+
+    path('email/',views.mail,name="mail"),
+    path('email/<int:id>/',views.mailid,name="mailid"),
+    path('product_mail/<str:product_name>/',views.product_mail,name="product-mail"),
 ]
