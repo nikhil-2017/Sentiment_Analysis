@@ -41,10 +41,10 @@ def mailid(request,id):
     form7 = file.rating
     host = "smtp.gmail.com"
     port = 587
-    username = "nickgaikwad11@gmail.com"
-    password = "11081999"
-    from_email = 'nickgaikwad11@gmail.com'
-    to_list = ['2017.nikhil.gaikwad@ves.ac.in']
+    username = "email@gmail.com"
+    password = "pwd"
+    from_email = 'email@gmail.com'
+    to_list = ['second_mail@gmail.com']
     try:
         email_conn = smtplib.SMTP(host, port)
         email_conn.ehlo()
@@ -140,10 +140,10 @@ def mail(request):
     form7 = file.rating
     host = "smtp.gmail.com"
     port = 587
-    username = "nickgaikwad11@gmail.com"
-    password = "11081999"
-    from_email = 'nickgaikwad11@gmail.com'
-    to_list = ['2017.nikhil.gaikwad@ves.ac.in']
+    username = "email@gmail.com"
+    password = "pwd"
+    from_email = 'email@gmail.com'
+    to_list = ['second_email@gmail.com']
     try:
         email_conn = smtplib.SMTP(host, port)
         email_conn.ehlo()
@@ -667,10 +667,10 @@ def product_mail(request,product_name):
     form7 = rating_avg
     host = "smtp.gmail.com"
     port = 587
-    username = "nickgaikwad11@gmail.com"
-    password = "11081999"
-    from_email = 'nickgaikwad11@gmail.com'
-    to_list = ['2017.nikhil.gaikwad@ves.ac.in']
+    username = "email@gmail.com"
+    password = "pwd"
+    from_email = 'email@gmail.com'
+    to_list = ['second_email@gmail.com']
     try:
         email_conn = smtplib.SMTP(host, port)
         email_conn.ehlo()
